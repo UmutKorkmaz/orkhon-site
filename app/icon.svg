@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Orkhon">
+  <!-- Stone tile -->
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a160e"/>
+      <stop offset="1" stop-color="#0c0a08"/>
+    </linearGradient>
+    <linearGradient id="rune" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7ff0e4"/>
+      <stop offset="1" stop-color="#4fe3d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#stone)"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#2a2418" stroke-width="1.5"/>
+  <!-- Old Turkic rune 𐰆 (o/od): angular bifurcated branch — chisel strokes -->
+  <g fill="none" stroke="url(#rune)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- central stem -->
+    <path d="M32 12 L32 52"/>
+    <!-- upper diagonal branch -->
+    <path d="M32 24 L44 16"/>
+    <!-- lower diagonal branch -->
+    <path d="M32 40 L44 48"/>
+  </g>
+  <!-- ochre accent: the inscription dot -->
+  <circle cx="20" cy="32" r="3" fill="#c08a3e"/>
+</svg>

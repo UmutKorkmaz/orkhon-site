@@ -11,9 +11,39 @@ import { Architecture } from "@/components/landing/architecture";
 import { Cli } from "@/components/landing/cli";
 import { Cta } from "@/components/landing/cta";
 
+const ORG_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Orkhon",
+  url: "https://orkhon.umutkorkmaz.net/",
+  logo: "https://orkhon.umutkorkmaz.net/logo.svg",
+  description:
+    "A hand-written transformer stack that learns Turkic the way the Göktürk inscriptions learned to keep it — tokenization, training, alignment, evaluation, and serving as one continuous act of inscription.",
+  sameAs: ["https://github.com/umutkorkmaz/orkhon"],
+};
+
+const SITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Orkhon",
+  url: "https://orkhon.umutkorkmaz.net/",
+  description:
+    "Orkhon is a hand-written Turkic transformer stack. The thesis: the oldest Turkic writing (the 8th-century Göktürk inscriptions on the Orkhon River) and the newest language model share the same ambition — to make language last, carry memory, and speak clearly across time. From inscription to inference.",
+  inLanguage: ["en", "tr"],
+  publisher: { "@type": "Organization", name: "Orkhon" },
+};
+
 export default function Home() {
   return (
     <div className="orkhon-landing">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSON_LD) }}
+      />
       <Hero />
       <hr className="orkhon-landing__rule" aria-hidden="true" />
       <WhatItIs />

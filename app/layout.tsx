@@ -44,12 +44,25 @@ export const metadata: Metadata = {
       "A hand-written transformer stack that turns raw Turkic text into durable, intelligible speech. From the Orkhon inscriptions to a living language system.",
     locale: "en_US",
     alternateLocale: ["tr_TR"],
+    images: [
+      {
+        url: "/og.svg",
+        width: 1200,
+        height: 630,
+        alt: "Orkhon — Turkic language models, from inscription to inference",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Orkhon — Turkic language models",
     description:
       "From the first written words of a language to a system that writes it. A hand-written Turkic transformer stack.",
+    images: ["/og.svg"],
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
   },
   robots: {
     index: true,
