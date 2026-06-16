@@ -49,6 +49,8 @@ interface ChatSurfaceProps {
   onDismissError: () => void;
   onSend: (text: string) => void;
   onReset: () => void;
+  /** Optional node rendered directly above the composer (e.g. consent gate). */
+  composerAffix?: ReactNode;
 }
 
 export function ChatSurface({
@@ -60,6 +62,7 @@ export function ChatSurface({
   onDismissError,
   onSend,
   onReset,
+  composerAffix,
 }: ChatSurfaceProps) {
   const { t } = useLang();
   const modelLabel = t(MODEL_LABEL);
@@ -101,6 +104,7 @@ export function ChatSurface({
         )}
 
         <div className="orkhon-chat__composer-wrap">
+          {composerAffix}
           {hasMessages && (
             <button
               type="button"

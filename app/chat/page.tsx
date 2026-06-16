@@ -4,52 +4,22 @@
 //
 // Composition:
 //   <ChatProviders>           (SessionProvider so useSession resolves)
-//     <ChatSurface>           (the actual UI; kept separate so the provider
-//                              boundary is explicit and the surface stays a
-//                              pure consumer of hooks/components)
+//     <ChatShell>             (owns session/consent/history orchestration and
+//                              composes ChatSurface + ConsentGate +
+//                              HistorySidebar)
 //
-// All chat-facing state lives in useChat(); this file is layout + glue.
+// ChatShell holds all chat-facing state (session, consent, active
+// conversation) so ChatSurface stays presentational. SessionProvider is the
+// outermost seam so useSession resolves inside the shell.
 
-import { useState } from "react";
 import { ChatProviders } from "./providers";
-import { ChatSurface } from "@/components/chat/chat-surface";
-import { ModelSelector } from "@/components/chat/model-selector";
-import { useChat } from "@/components/chat/use-chat";
+import { ChatShell } from "@/components/chat/chat-shell";
 
 export default function ChatPage() {
   return (
     <ChatProviders>
-      <ChatPageInner />
+      <ChatShell />
     </ChatProviders>
   );
 }
 
-function ChatPageInner() {
-  // Default to Kül Tigin — the flagship instruct model — so first-time
-  // visitors land on a model that actually answers (a base model would only
-  // continue their text, which is surprising without the selector's
-  // explanation). The selector still explains every kind.
-  const [model, setModel] = useState("kultigin");
-  const {
-    messages,
-    sending,
-    awaitingFirstToken,
-    error,
-    send,
-    clearError,
-    reset,
-  } = useChat();
-
-  return (
-    <ChatSurface
-      modelSelector={<ModelSelector value={model} onChange={setModel} />}
-      messages={messages}
-      sending={sending}
-      awaitingFirstToken={awaitingFirstToken}
-      error={error}
-      onDismissError={clearError}
-      onSend={(text) => send(model, text)}
-      onReset={reset}
-    />
-  );
-}

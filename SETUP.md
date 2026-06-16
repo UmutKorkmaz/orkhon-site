@@ -34,13 +34,21 @@ Until this is done, `/chat` renders fully but messages return HTTP 503 `{"error"
 ## Deploy (for reference)
 
 ```
-# local
-pnpm build            # output: "standalone"
-# ship (note: do NOT --exclude node_modules — the standalone node_modules is required)
-rsync -az --delete --exclude '.git' --exclude '.next/cache' .next/standalone/ root@159.223.24.110:/var/www/orkhon/
-rsync -az --delete .next/static/ root@159.223.24.110:/var/www/orkhon/.next/static/
-# server
-systemctl restart orkhon   # nginx proxies orkhon.umutkorkmaz.net → 127.0.0.1:3001
+# ship source (NOT node_modules/.next/.env — those are built on the server)
+rsync -az --exclude '.git' --exclude 'node_modules' --exclude '.next' --exclude '.env' \
+  --exclude 'dev.db' --exclude '*.log' --exclude '.DS_Store' \
+  ./ root@159.223.24.110:/var/www/orkhon/
+# server (build ON the server — Prisma 7 + better-sqlite3 is a native module, so a macOS
+# build won't run on Linux; building on the server produces the correct native binding)
+ssh root@159.223.24.110 'cd /var/www/orkhon && pnpm install && pnpm prisma generate && \
+  pnpm prisma migrate deploy && pnpm build && systemctl restart orkhon'
 ```
 
-Caution: `rsync --delete` on the standalone dir will remove `/var/www/orkhon/.env` — recreate it after every deploy (or rsync the env separately).
+The service runs `next start -p 3001` (full node_modules, not standalone — standalone can't
+trace the `better-sqlite3` native `.node`). `DATABASE_URL=file:/var/www/orkhon/prisma/dev.db`.
+nginx proxies `orkhon.umutkorkmaz.net` → `127.0.0.1:3001`.
+
+**Gotchas**: there's a stray `pnpm-workspace.yaml` left by create-next-app — delete it (it makes
+`pnpm install` fail with "packages field missing"). And `next start` warns under `output: "standalone"`,
+so that was removed from `next.config.ts`.
+
