@@ -11,9 +11,8 @@ export function SiteNav() {
     <header className="orkhon-site-header">
       <div className="orkhon-container orkhon-site-header__inner">
         <Link href="/" className="orkhon-brand" aria-label="Orkhon — home">
-          <span className="orkhon-brand__mark" aria-hidden="true">
-            𐰆
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="" className="orkhon-brand__logo" />
           <span className="orkhon-brand__name">Orkhon</span>
         </Link>
 
@@ -57,17 +56,17 @@ export function SiteNav() {
         }
         .orkhon-brand {
           display: inline-flex;
-          align-items: baseline;
+          align-items: center;
           gap: 0.55rem;
           color: var(--ink-0);
           font-family: var(--font-serif);
         }
         .orkhon-brand:hover { color: var(--ink-0); }
-        .orkhon-brand__mark {
-          font-size: 1.5rem;
-          color: var(--ochre);
-          line-height: 1;
-          transform: translateY(2px);
+        .orkhon-brand__logo {
+          height: 2rem;
+          width: auto;
+          display: block;
+          border-radius: 0.35rem;
         }
         .orkhon-brand__name {
           font-size: 1.35rem;

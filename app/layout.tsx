@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     alternateLocale: ["tr_TR"],
     images: [
       {
-        url: "/og.svg",
+        url: "/og.png",
         width: 1200,
         height: 630,
         alt: "Orkhon — Turkic language models, from inscription to inference",
@@ -58,11 +58,12 @@ export const metadata: Metadata = {
     title: "Orkhon — Turkic language models",
     description:
       "From the first written words of a language to a system that writes it. A hand-written Turkic transformer stack.",
-    images: ["/og.svg"],
+    images: ["/og.png"],
   },
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    shortcut: ["/icon.svg"],
+    icon: [{ url: "/favicon.png", type: "image/png", sizes: "512x512" }],
+    shortcut: ["/favicon.png"],
+    apple: [{ url: "/favicon.png", sizes: "512x512" }],
   },
   robots: {
     index: true,

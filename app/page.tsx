@@ -16,7 +16,7 @@ const ORG_JSON_LD = {
   "@type": "Organization",
   name: "Orkhon",
   url: "https://orkhon.umutkorkmaz.net/",
-  logo: "https://orkhon.umutkorkmaz.net/logo.svg",
+  logo: "https://orkhon.umutkorkmaz.net/logo.png",
   description:
     "A hand-written transformer stack that learns Turkic the way the Göktürk inscriptions learned to keep it — tokenization, training, alignment, evaluation, and serving as one continuous act of inscription.",
   sameAs: ["https://github.com/umutkorkmaz/orkhon"],
