@@ -21,8 +21,7 @@
 // so ChatSurface stays a pure presentational shell.
 
 import { useCallback, useState } from "react";
-import { useSession, signIn } from "next-auth/react";
-import { useLang } from "@/lib/i18n";
+import { useSession } from "next-auth/react";
 import { ChatSurface } from "./chat-surface";
 import { ModelSelector } from "./model-selector";
 import { MODELS, LIVE_MODEL_IDS } from "@/lib/models";
@@ -32,19 +31,7 @@ import { HistorySidebar } from "./history-sidebar";
 import type { ChatMessage } from "./message-thread";
 import "./chat.css";
 
-const COPY = {
-  anonHint: {
-    en: "Sign in to save your chats.",
-    tr: "Sohbetlerini kaydetmek için oturum aç.",
-  },
-  signIn: {
-    en: "Sign in",
-    tr: "Oturum aç",
-  },
-} as const;
-
 export function ChatShell() {
-  const { t } = useLang();
   const { status } = useSession();
   const isSignedIn = status === "authenticated";
   // Avoid flashing history UI during the initial loading state.
@@ -136,19 +123,6 @@ export function ChatShell() {
             ) : undefined
           }
         />
-
-        {sessionResolved && !isSignedIn && (
-          <p className="orkhon-chat-shell__anon-hint" role="note">
-            {t(COPY.anonHint)}{" "}
-            <button
-              type="button"
-              className="orkhon-chat-shell__anon-link"
-              onClick={() => signIn("google")}
-            >
-              {t(COPY.signIn)} →
-            </button>
-          </p>
-        )}
       </div>
 
       <ChatShellStyles />
@@ -183,32 +157,6 @@ function ChatShellStyles() {
         display: flex;
         flex-direction: column;
       }
-      .orkhon-chat-shell__anon-hint {
-        margin-top: 1rem;
-        font-family: var(--font-mono);
-        font-size: 0.76rem;
-        letter-spacing: 0.02em;
-        color: var(--ink-2);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-      }
-      .orkhon-chat-shell__anon-link {
-        background: none;
-        border: none;
-        padding: 0;
-        font: inherit;
-        letter-spacing: inherit;
-        color: var(--cyan);
-        cursor: pointer;
-        text-decoration: underline;
-        text-underline-offset: 3px;
-      }
-      .orkhon-chat-shell__anon-link:hover {
-        color: var(--cyan-bright);
-      }
-
       @media (max-width: 980px) {
         .orkhon-chat-shell {
           grid-template-columns: 1fr;

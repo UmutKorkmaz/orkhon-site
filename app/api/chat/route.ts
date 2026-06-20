@@ -31,6 +31,11 @@ import {
   getCurrentUser,
   isUnauthorizedError,
 } from "@/lib/consent";
+import {
+  deterministicAssistantReply,
+  fallbackAssistantReply,
+  isDegenerateAssistantReply,
+} from "@/lib/assistant-router";
 
 export const runtime = "nodejs";
 
@@ -288,31 +293,39 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   try {
-    const space = process.env.ORKHON_SPACE ?? "korkmazumut/orkhon-demo";
-    const token = process.env.ORKHON_HF_TOKEN;
-    // ClientOptions.token is typed `hf_${string}`; cast the narrow options
-    // object so a plain env string satisfies it without weakening the SDK type.
-    const opts = token
-      ? ({ token } as { token: `hf_${string}` })
-      : undefined;
+    let reply = deterministicAssistantReply(latestMessage);
 
-    // Bound both phases so a cold/asleep backend fails fast with a clear
-    // "waking up" message instead of holding the request open for minutes while
-    // the browser sits on the composing dots.
-    const app = await withTimeout(Client.connect(space, opts), 20_000);
-    const result = await withTimeout(
-      app.predict<unknown[]>("respond", [
-        latestMessage,
-        history,
-        modelFromClient,
-      ]),
-      35_000,
-    );
+    if (reply === null) {
+      const space = process.env.ORKHON_SPACE ?? "korkmazumut/orkhon-demo";
+      const token = process.env.ORKHON_HF_TOKEN;
+      // ClientOptions.token is typed `hf_${string}`; cast the narrow options
+      // object so a plain env string satisfies it without weakening the SDK type.
+      const opts = token
+        ? ({ token } as { token: `hf_${string}` })
+        : undefined;
 
-    const data = result.data;
-    const first = Array.isArray(data) ? data[0] : undefined;
-    const reply =
-      typeof first === "string" ? first : JSON.stringify(first ?? "");
+      // Bound both phases so a cold/asleep backend fails fast with a clear
+      // "waking up" message instead of holding the request open for minutes while
+      // the browser sits on the composing dots.
+      const app = await withTimeout(Client.connect(space, opts), 20_000);
+      const result = await withTimeout(
+        app.predict<unknown[]>("respond", [
+          latestMessage,
+          history,
+          modelFromClient,
+        ]),
+        35_000,
+      );
+
+      const data = result.data;
+      const first = Array.isArray(data) ? data[0] : undefined;
+      reply =
+        typeof first === "string" ? first : JSON.stringify(first ?? "");
+
+      if (isDegenerateAssistantReply(reply, latestMessage)) {
+        reply = fallbackAssistantReply(latestMessage);
+      }
+    }
 
     // --- Persist the assistant reply (after receiving it) -------------------
     // Same consent gate + same swallow-on-error rule. If the user-turn write

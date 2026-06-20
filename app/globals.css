@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;450;500;600&display=swap");
 @import "tailwindcss";
 
 /* Orkhon — scholarly dark theme.
@@ -6,8 +7,6 @@
          system sans body, ui-monospace for model ids / code.
    Vibe: Old-Turkic rune via subtle texture & sharp geometric accents —
          not cartoonish. */
-
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;450;500;600&display=swap");
 
 :root {
   /* Surface ramp — deep warm stone, not flat black. */
@@ -182,6 +181,31 @@ strong { font-weight: 600; color: var(--ink-0); }
 }
 .orkhon-card:hover {
   border-color: var(--line-strong);
+}
+
+.orkhon-auth-error {
+  min-height: calc(100vh - 5rem);
+  display: grid;
+  place-items: center;
+  padding-block: clamp(4rem, 3rem + 5vw, 8rem);
+}
+
+.orkhon-auth-error__card {
+  width: min(100%, 34rem);
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.orkhon-auth-error__card p {
+  color: var(--ink-1);
+}
+
+.orkhon-auth-error__code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-3) !important;
 }
 
 /* ---- Buttons ---- */
