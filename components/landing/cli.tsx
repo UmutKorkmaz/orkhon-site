@@ -16,10 +16,10 @@ interface Cmd {
 
 const COMMANDS: Cmd[] = [
   {
-    cmd: "orkhon chat --model kultigin",
+    cmd: "orkhon chat --model tangri",
     comment: {
-      en: "drop into an interactive REPL with the flagship instruct model",
-      tr: "amiral talimat modeliyle etkileşimli bir REPL'e geç",
+      en: "drop into an interactive REPL with the unified specialist",
+      tr: "birlesik uzman modelle etkilesimli bir REPL'e gec",
     },
     primary: true,
   },
@@ -32,10 +32,10 @@ const COMMANDS: Cmd[] = [
     primary: true,
   },
   {
-    cmd: "orkhon train --config bengu.yaml",
+    cmd: "orkhon train --config sft_tangri_unified.yaml",
     comment: {
-      en: "pretrain a base model from a YAML recipe",
-      tr: "bir YAML tarifinden temel modeli ön-eğit",
+      en: "fine-tune the unified EN/TR/Kokturk assistant recipe",
+      tr: "birlesik EN/TR/Kokturk asistan tarifini ince ayarla",
     },
     primary: true,
   },

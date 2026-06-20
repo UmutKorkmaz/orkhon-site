@@ -25,6 +25,7 @@ import { useSession, signIn } from "next-auth/react";
 import { useLang } from "@/lib/i18n";
 import { ChatSurface } from "./chat-surface";
 import { ModelSelector } from "./model-selector";
+import { MODELS, LIVE_MODEL_IDS } from "@/lib/models";
 import { useChat } from "./use-chat";
 import { ConsentGate } from "./consent-gate";
 import { HistorySidebar } from "./history-sidebar";
@@ -48,8 +49,18 @@ export function ChatShell() {
   const isSignedIn = status === "authenticated";
   // Avoid flashing history UI during the initial loading state.
   const sessionResolved = status === "authenticated" || status === "unauthenticated";
+  // The history sidebar only exists when signed in. When it is absent we must
+  // NOT reserve its grid column — otherwise an anonymous visitor sees the
+  // whole chat surface shoved into the right column beside an empty gutter.
+  const showSidebar = sessionResolved && isSignedIn;
 
-  const [model, setModel] = useState("kultigin");
+  // Default to the current unified assistant when it is served; otherwise fall
+  // back to any live model. This must match a key
+  // the family Space knows (see lib/models.ts LIVE_MODEL_IDS).
+  const [model, setModel] = useState<string>(() => {
+    if (LIVE_MODEL_IDS.has("tangri")) return "tangri";
+    return MODELS.find((m) => LIVE_MODEL_IDS.has(m.id))?.id ?? "tangri";
+  });
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [historyRefresh, setHistoryRefresh] = useState(0);
@@ -89,8 +100,12 @@ export function ChatShell() {
   }, [reset]);
 
   return (
-    <div className="orkhon-chat-shell">
-      {sessionResolved && isSignedIn && (
+    <div
+      className={`orkhon-chat-shell${
+        showSidebar ? "" : " orkhon-chat-shell--no-sidebar"
+      }`}
+    >
+      {showSidebar && (
         <div className="orkhon-chat-shell__sidebar">
           <HistorySidebar
             activeId={conversationId}
@@ -151,6 +166,11 @@ function ChatShellStyles() {
         grid-template-columns: minmax(220px, 280px) 1fr;
         gap: clamp(1rem, 0.75rem + 1vw, 2rem);
         align-items: start;
+      }
+      /* Anonymous / loading: no sidebar → drop the reserved column so the
+         chat surface fills the full width instead of hugging the right side. */
+      .orkhon-chat-shell--no-sidebar {
+        grid-template-columns: 1fr;
       }
       .orkhon-chat-shell__sidebar {
         position: sticky;

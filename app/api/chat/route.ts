@@ -50,6 +50,35 @@ const BACKEND_UNAVAILABLE = {
   message: "The live model backend is not connected yet.",
 } as const;
 
+// Distinct signal for a reachable-but-slow backend: the Space is waking from
+// sleep / still loading the model (cold start after a HF maintenance restart).
+// Kept 503 so the existing error path renders it, but the `waking_up` code lets
+// the UI show a friendlier "try again in a moment" than a generic outage.
+const BACKEND_WAKING_UP = {
+  error: "waking_up",
+  message: "The model is waking up. Try again in a few seconds.",
+} as const;
+
+/** Sentinel rejected by `withTimeout` when a backend phase overruns its budget. */
+class BackendTimeout extends Error {}
+
+/** Race a promise against a deadline so a cold backend never hangs the client. */
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new BackendTimeout()), ms);
+    p.then(
+      (v) => {
+        clearTimeout(t);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(t);
+        reject(e);
+      },
+    );
+  });
+}
+
 function json(status: number, body: unknown, init?: ResponseInit): NextResponse {
   return NextResponse.json(body, { status, ...init });
 }
@@ -267,11 +296,18 @@ export async function POST(req: Request): Promise<NextResponse> {
       ? ({ token } as { token: `hf_${string}` })
       : undefined;
 
-    const app = await Client.connect(space, opts);
-    const result = await app.predict<unknown[]>("respond", [
-      latestMessage,
-      history,
-    ]);
+    // Bound both phases so a cold/asleep backend fails fast with a clear
+    // "waking up" message instead of holding the request open for minutes while
+    // the browser sits on the composing dots.
+    const app = await withTimeout(Client.connect(space, opts), 20_000);
+    const result = await withTimeout(
+      app.predict<unknown[]>("respond", [
+        latestMessage,
+        history,
+        modelFromClient,
+      ]),
+      35_000,
+    );
 
     const data = result.data;
     const first = Array.isArray(data) ? data[0] : undefined;
@@ -301,6 +337,10 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     return json(200, { reply, conversationId, persisted });
   } catch (e) {
+    if (e instanceof BackendTimeout) {
+      // Reachable but slow (cold start): keep 503 but signal "waking up".
+      return json(503, BACKEND_WAKING_UP);
+    }
     console.error("[chat] backend error", e);
     return json(503, BACKEND_UNAVAILABLE);
   }

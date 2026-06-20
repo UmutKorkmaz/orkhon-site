@@ -18,7 +18,13 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
-import { MODELS, KIND_LABEL, type Model, type ModelKind } from "@/lib/models";
+import {
+  MODELS,
+  KIND_LABEL,
+  LIVE_MODEL_IDS,
+  type Model,
+  type ModelKind,
+} from "@/lib/models";
 import { useLang } from "@/lib/i18n";
 
 /** One-line "what kind of model is this", bilingual, by kind. */
@@ -36,6 +42,12 @@ const KIND_EXPLANATION: Record<ModelKind, { en: string; tr: string }> = {
     tr: "Birebir eşlikle Orkhon'a yeniden yüklenmiş açık ağırlıklı bir temel — dış bilgi, aynı soy.",
   },
 };
+
+/** Live-vs-upcoming badge copy. Only `LIVE_MODEL_IDS` voices have served weights. */
+const STATUS = {
+  live: { en: "Live", tr: "Canlı" },
+  soon: { en: "Coming soon", tr: "Yakında" },
+} as const;
 
 interface ModelSelectorProps {
   value: string;
@@ -84,6 +96,9 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
   }, [open, selected.id]);
 
   function choose(model: Model) {
+    // Only models whose weights are actually served can be selected; the rest
+    // are showcased in the zoo but not yet online.
+    if (!LIVE_MODEL_IDS.has(model.id)) return;
     onChange(model.id);
     setOpen(false);
   }
@@ -152,15 +167,21 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
           {MODELS.map((model, idx) => {
             const isSelected = model.id === selected.id;
             const isFocused = idx === focusIndex;
+            const live = LIVE_MODEL_IDS.has(model.id);
             return (
               <li
                 key={model.id}
                 id={`${listboxId}-opt-${idx}`}
                 role="option"
                 aria-selected={isSelected}
+                aria-disabled={!live}
                 data-selected={isSelected ? "true" : "false"}
                 data-focused={isFocused ? "true" : "false"}
+                data-disabled={!live ? "true" : "false"}
                 className="orkhon-ms__option"
+                style={
+                  live ? undefined : { opacity: 0.5, cursor: "not-allowed" }
+                }
                 tabIndex={-1}
                 onClick={() => choose(model)}
                 onMouseEnter={() => setFocusIndex(idx)}
@@ -171,6 +192,24 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                     {model.codename}
                   </span>
                   <KindBadge kind={model.kind} />
+                  <span
+                    className="orkhon-ms__status"
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.6rem",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      padding: "0.1rem 0.4rem",
+                      borderRadius: "var(--radius)",
+                      border: "1px solid",
+                      borderColor: live
+                        ? "var(--cyan-dim)"
+                        : "var(--line-strong)",
+                      color: live ? "var(--cyan)" : "var(--ink-3)",
+                    }}
+                  >
+                    {live ? t(STATUS.live) : t(STATUS.soon)}
+                  </span>
                   <span className="orkhon-ms__option-meta">
                     {model.params}
                     {model.metric ? ` · ${model.metric}` : ""}

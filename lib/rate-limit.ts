@@ -21,7 +21,10 @@ interface Bucket {
 }
 
 export const ANONYMOUS_LIMIT = {
-  max: 10,
+  // A demo chat has to let a curious visitor actually explore it. 10/hour was
+  // tight enough that anyone poking the model for a few minutes hit the cap and
+  // saw "no answer". 40/hour still blunts abuse but lets people play.
+  max: 40,
   windowMs: 60 * 60 * 1000, // 1 hour
 } as const;
 

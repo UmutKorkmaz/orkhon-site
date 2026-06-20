@@ -217,12 +217,26 @@ export function useChat(
 
     if (!res.ok || !res.body) {
       const snippet = await readBodySnippet(res);
+      // Prefer a human message when the backend returns a JSON error envelope
+      // (e.g. {"error":"waking_up","message":"The model is waking up…"} or a
+      // rate-limit body) instead of dumping raw JSON into the banner.
+      let friendly = snippet || `HTTP ${res.status}`;
+      try {
+        const parsed = JSON.parse(snippet) as {
+          message?: unknown;
+          error?: unknown;
+        };
+        if (typeof parsed.message === "string") friendly = parsed.message;
+        else if (typeof parsed.error === "string") friendly = parsed.error;
+      } catch {
+        /* not JSON — keep the raw snippet */
+      }
       dropEmptyAssistant();
       setSending(false);
       setAwaitingFirstToken(false);
       setError({
         kind: classifyError(res.status, snippet),
-        message: snippet || `HTTP ${res.status}`,
+        message: friendly,
       });
       return;
     }
@@ -234,7 +248,17 @@ export function useChat(
     // Any other JSON is treated as an error envelope.
     const contentType = res.headers.get("content-type") ?? "";
     if (contentType.includes("application/json")) {
-      const raw = await readBodySnippet(res);
+      // Read the FULL body — a long reply (e.g. a Kül Tigin story of ~600+
+      // chars) makes the JSON envelope well over the 400-char snippet cap, so
+      // a truncated read would yield half-JSON, fail to parse, and wrongly
+      // surface as "something went wrong". readBodySnippet is only for error
+      // bodies; success must parse the complete envelope.
+      let raw = "";
+      try {
+        raw = await res.text();
+      } catch {
+        raw = "";
+      }
       let parsed: ChatJsonEnvelope | null = null;
       try {
         parsed = JSON.parse(raw) as ChatJsonEnvelope;
@@ -278,7 +302,7 @@ export function useChat(
       const msg =
         (parsed !== null && typeof parsed.message === "string" && parsed.message) ||
         (parsed !== null && typeof parsed.error === "string" && parsed.error) ||
-        raw ||
+        raw.slice(0, 400) ||
         "unexpected JSON response";
       setError({
         kind: classifyError(res.status, msg),

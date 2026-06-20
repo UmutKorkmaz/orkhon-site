@@ -160,5 +160,8 @@ export const FOOTER = {
 export const LINKS = {
   github: "https://github.com/umutkorkmaz/orkhon",
   huggingface: "https://huggingface.co/umutkorkmaz",
+  // Anchor on the landing page — the ModelZoo section carries id="models".
+  // Cross-page safe: from /chat this navigates home then scrolls to #models.
+  models: "/#models",
   chat: "/chat",
 } as const;
