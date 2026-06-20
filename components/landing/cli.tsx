@@ -19,7 +19,7 @@ const COMMANDS: Cmd[] = [
     cmd: "orkhon chat --model tangri",
     comment: {
       en: "drop into an interactive REPL with the unified specialist",
-      tr: "birlesik uzman modelle etkilesimli bir REPL'e gec",
+      tr: "birleşik uzman modelle etkileşimli bir REPL'e geç",
     },
     primary: true,
   },
@@ -35,7 +35,7 @@ const COMMANDS: Cmd[] = [
     cmd: "orkhon train --config sft_tangri_unified.yaml",
     comment: {
       en: "fine-tune the unified EN/TR/Kokturk assistant recipe",
-      tr: "birlesik EN/TR/Kokturk asistan tarifini ince ayarla",
+      tr: "birleşik EN/TR/Köktürk asistan tarifini ince ayarla",
     },
     primary: true,
   },

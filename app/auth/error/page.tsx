@@ -7,9 +7,9 @@ interface AuthErrorPageProps {
 }
 
 const COPY = {
-  title: "Oturum acma su anda hazir degil",
-  body: "Google OAuth ayarinda sunucu tarafli bir sorun var. Sohbeti anonim olarak kullanmaya devam edebilirsin; kayitli sohbetler icin OAuth anahtari yenilenmeli.",
-  action: "Sohbete don",
+  title: "Oturum açma şu anda hazır değil",
+  body: "Google OAuth ayarında sunucu taraflı bir sorun var. Sohbeti anonim olarak kullanmaya devam edebilirsin; kayıtlı sohbetler için OAuth anahtarı yenilenmeli.",
+  action: "Sohbete dön",
 } as const;
 
 export default async function AuthErrorPage({
