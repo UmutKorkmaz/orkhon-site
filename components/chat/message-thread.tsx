@@ -74,7 +74,7 @@ export function MessageThread({
       onScroll={onScroll}
       role="log"
       aria-live="polite"
-      aria-label="Lab run"
+      aria-label="Conversation"
     >
       <div className="orkhon-thread__inner">
         {messages.map((m) => (
@@ -133,11 +133,11 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 const EMPTY_STATE: { en: { title: string; body: string }; tr: { title: string; body: string } } = {
   en: {
     title: "Begin the inscription",
-    body: "Pick a model, load a prepared run, edit the prompt, and Orkhon writes back.",
+    body: "Pick a model, write a line, and Orkhon writes back. Base models continue your text; instruct models answer.",
   },
   tr: {
     title: "Yazıtı başlat",
-    body: "Bir model seç, hazır denemeyi yükle, promptu düzenle ve Orkhon yanıtlasın.",
+    body: "Bir model seç, bir satır yaz, Orkhon yanıtlasın. Temel modeller metninizi sürdürür; talimat modelleri yanıtlar.",
   },
 };
 

@@ -23,9 +23,9 @@ export function SiteNav() {
           <Link href={LINKS.models} className="orkhon-site-nav__link">
             {t(NAV.models)}
           </Link>
-          <Link href={LINKS.chat} className="orkhon-site-nav__link">
+          <a href={LINKS.chat} className="orkhon-site-nav__link">
             {t(NAV.chat)}
-          </Link>
+          </a>
           <a
             href={LINKS.github}
             className="orkhon-site-nav__link"

@@ -5,15 +5,15 @@ const TITLE = "Lab — Orkhon";
 export const metadata: Metadata = {
   title: TITLE,
   description:
-    "Redirects to the Orkhon Lab, where visitors can select a model and run prepared model-specific experiments.",
+    "Redirects to the Orkhon Lab on lab.umutkorkmaz.net.",
   alternates: {
-    canonical: "https://orkhon.umutkorkmaz.net/lab",
+    canonical: "https://lab.umutkorkmaz.net/orkhon/",
   },
   openGraph: {
     title: TITLE,
     description:
-      "Select an Orkhon family model and run prepared model-specific experiments.",
-    url: "https://orkhon.umutkorkmaz.net/lab",
+      "Open the model-based Orkhon Lab.",
+    url: "https://lab.umutkorkmaz.net/orkhon/",
   },
 };
 

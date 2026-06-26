@@ -41,32 +41,32 @@ interface ConsentGateProps {
 
 const COPY = {
   title: {
-    en: "Save your Lab runs — with your consent",
-    tr: "Lab denemelerini kaydet — senin izninle",
+    en: "Save your chats — with your consent",
+    tr: "Sohbetlerini kaydet — senin izninle",
   },
   intro: {
-    en: "KVKK & GDPR require your consent before we store any run. Accept to keep Lab history under your account so you can return to it.",
-    tr: "KVKK ve GDPR, herhangi bir denemeyi saklamadan önce iznini gerektirir. Kabul edersen Lab geçmişin hesabın altında kaydedilir ve sonra dönüp bakabilirsin.",
+    en: "KVKK & GDPR require your consent before we store any conversation. Accept to keep your chats under your account so you can return to them.",
+    tr: "KVKK ve GDPR, herhangi bir konuşmayı saklamadan önce iznini gerektirir. Kabul edersen sohbetlerin hesabın altında kaydedilir ve sonra dönüp bakabilirsin.",
   },
   policyLabel: {
     en: "What we store",
     tr: "Ne saklıyoruz",
   },
   decline: {
-    en: "Without accepting, the Lab still works but runs aren't saved.",
-    tr: "Kabul etmezsen Lab yine çalışır ama denemeler kaydedilmez.",
+    en: "Without accepting, chats still work but aren't saved.",
+    tr: "Kabul etmezsen sohbet yine çalışır ama kaydedilmez.",
   },
   accept: {
-    en: "Accept & save my runs",
-    tr: "Kabul et ve denemelerimi kaydet",
+    en: "Accept & save my chats",
+    tr: "Kabul et ve sohbetlerimi kaydet",
   },
   accepting: {
     en: "Saving preference…",
     tr: "Tercih kaydediliyor…",
   },
   fetchError: {
-    en: "Couldn't load the policy right now. The Lab still works — saving will retry later.",
-    tr: "Politika şu an yüklenemedi. Lab yine çalışır — kaydetme daha sonra yeniden denenecek.",
+    en: "Couldn't load the policy right now. Chat still works — saving will retry later.",
+    tr: "Politika şu an yüklenemedi. Sohbet yine çalışır — kaydetme daha sonra yeniden denenecek.",
   },
   acceptError: {
     en: "Couldn't save your choice. Please try again.",
@@ -80,8 +80,8 @@ const COPY = {
 
 /** Bundled fallback policy in case the backend omits it. Keep it short. */
 const FALLBACK_POLICY: Bilingual = {
-  en: "Only the prompts you send and the model's replies, linked to your account so you can reopen Lab runs later. We don't share this with third parties. You can delete any saved run at any time — your right to erasure is honored immediately.",
-  tr: "Yalnızca gönderdiğin promptlar ve modelin yanıtları, Lab denemelerine sonra dönebilmen için hesabınla ilişkilendirilir. Bunu üçüncü taraflarla paylaşmayız. İstediğin kayıtlı denemeyi istediğin an silebilirsin — silme hakkın anında uygulanır.",
+  en: "Only the messages you send and the model's replies, linked to your account so you can reopen conversations later. We don't share this with third parties. You can delete any conversation at any time — your right to erasure is honored immediately.",
+  tr: "Yalnızca gönderdiğin mesajlar ve modelin yanıtları, konuşmalara sonra dönebilmen için hesabınla ilişkilendirilir. Bunu üçüncü taraflarla paylaşmayız. İstediğin konuşmayı istediğin an silebilirsin — silme hakkın anında uygulanır.",
 };
 
 /** Normalize a tolerant policy shape into a {en, tr} pair. */

@@ -64,6 +64,13 @@ const BACKEND_WAKING_UP = {
   message: "The model is waking up. Try again in a few seconds.",
 } as const;
 
+const ALLOWED_CHAT_ORIGINS = new Set([
+  "https://lab.umutkorkmaz.net",
+  "https://orkhon.umutkorkmaz.net",
+  "http://127.0.0.1:4178",
+  "http://localhost:4178",
+]);
+
 /** Sentinel rejected by `withTimeout` when a backend phase overruns its budget. */
 class BackendTimeout extends Error {}
 
@@ -84,8 +91,42 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   });
 }
 
-function json(status: number, body: unknown, init?: ResponseInit): NextResponse {
-  return NextResponse.json(body, { status, ...init });
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("origin");
+  const allowOrigin =
+    origin && ALLOWED_CHAT_ORIGINS.has(origin)
+      ? origin
+      : "https://orkhon.umutkorkmaz.net";
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Accept",
+    "Vary": "Origin",
+  };
+}
+
+function json(
+  req: Request,
+  status: number,
+  body: unknown,
+  init?: ResponseInit,
+): NextResponse {
+  const headers = new Headers(init?.headers);
+  for (const [key, value] of Object.entries(corsHeaders(req))) {
+    headers.set(key, value);
+  }
+  return NextResponse.json(body, {
+    status,
+    ...init,
+    headers,
+  });
+}
+
+export async function OPTIONS(req: Request): Promise<NextResponse> {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders(req),
+  });
 }
 
 function getClientIp(req: Request): string {
@@ -163,7 +204,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     body = (await req.json()) as ChatBody;
   } catch {
-    return json(400, {
+    return json(req, 400, {
       error: "bad_request",
       message: "Request body must be valid JSON.",
     });
@@ -171,7 +212,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   const rawMessages = body.messages;
   if (!Array.isArray(rawMessages) || rawMessages.length === 0) {
-    return json(400, {
+    return json(req, 400, {
       error: "bad_request",
       message: "`messages` must be a non-empty array.",
     });
@@ -180,14 +221,14 @@ export async function POST(req: Request): Promise<NextResponse> {
   const messages: IncomingMessage[] = [];
   for (const m of rawMessages) {
     if (typeof m !== "object" || m === null) {
-      return json(400, {
+      return json(req, 400, {
         error: "bad_request",
         message: "Each message must be an object.",
       });
     }
     const msg = m as IncomingMessage;
     if (typeof msg.content !== "string" || msg.content.length === 0) {
-      return json(400, {
+      return json(req, 400, {
         error: "bad_request",
         message: "Each message needs non-empty string `content`.",
       });
@@ -214,6 +255,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   const limit = checkRateLimit(limitKey, !!user);
   if (!limit.allowed) {
     return json(
+      req,
       429,
       {
         error: "rate_limited",
@@ -243,12 +285,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     typeof latestRaw === "string" ? latestRaw : "";
   // First user message in the batch — used as a title for brand-new
   // conversations. Trim + clip so a leading-space or very long first message
-  // doesn't become an unwieldy title; fall back to "New run".
+  // doesn't become an unwieldy title; fall back to "New chat".
   const firstRaw = messages[0]?.content;
   const firstUserContent =
     (typeof firstRaw === "string" ? firstRaw : "")
       .trim()
-      .slice(0, 80) || "New run";
+      .slice(0, 80) || "New chat";
 
   // --- Persist the user turn (before calling the model) ---------------------
   // Only when consented. Wrapped end-to-end: any DB error is swallowed and we
@@ -348,13 +390,13 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
     }
 
-    return json(200, { reply, conversationId, persisted });
+    return json(req, 200, { reply, conversationId, persisted });
   } catch (e) {
     if (e instanceof BackendTimeout) {
       // Reachable but slow (cold start): keep 503 but signal "waking up".
-      return json(503, BACKEND_WAKING_UP);
+      return json(req, 503, BACKEND_WAKING_UP);
     }
     console.error("[chat] backend error", e);
-    return json(503, BACKEND_UNAVAILABLE);
+    return json(req, 503, BACKEND_UNAVAILABLE);
   }
 }

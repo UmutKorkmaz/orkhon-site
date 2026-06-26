@@ -1,6 +1,6 @@
 "use client";
 
-// Client-side providers for the Lab route.
+// Client-side providers for the /chat route.
 //
 // `useSession` (from next-auth/react) requires a <SessionProvider> ancestor,
 // otherwise it throws in development. This component wraps children in

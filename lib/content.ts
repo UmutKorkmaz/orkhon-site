@@ -161,7 +161,7 @@ export const LINKS = {
   github: "https://github.com/umutkorkmaz/orkhon",
   huggingface: "https://huggingface.co/umutkorkmaz",
   // Anchor on the landing page — the ModelZoo section carries id="models".
-  // Cross-page safe: from /lab this navigates home then scrolls to #models.
+  // Cross-page safe: from the Lab this navigates home then scrolls to #models.
   models: "/#models",
-  chat: "/lab",
+  chat: "https://lab.umutkorkmaz.net/orkhon/",
 } as const;

@@ -1,6 +1,6 @@
 "use client";
 
-// ChatShell — owns the per-session orchestration for the Orkhon Lab route and
+// ChatShell — owns the per-session orchestration for the /chat route and
 // composes the three consent/history surfaces around the presentational
 // ChatSurface.
 //
@@ -13,7 +13,7 @@
 //      backend is the final authority on whether saves happen).
 //   3. Track the active conversationId. use-chat hands it back via
 //      onConversation after each persisted turn; we feed it forward into the
-//      next send() so turns append to the right thread. New run resets it.
+//      next send() so turns append to the right thread. New chat resets it.
 //   4. Bump a refreshKey after each persisted turn so the history sidebar
 //      re-fetches its list.
 //
@@ -24,7 +24,6 @@ import { useCallback, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ChatSurface } from "./chat-surface";
 import { ModelSelector } from "./model-selector";
-import { ModelLabPanel } from "./model-lab-panel";
 import { MODELS, LIVE_MODEL_IDS } from "@/lib/models";
 import { useChat } from "./use-chat";
 import { ConsentGate } from "./consent-gate";
@@ -49,10 +48,6 @@ export function ChatShell() {
     if (LIVE_MODEL_IDS.has("tangri")) return "tangri";
     return MODELS.find((m) => LIVE_MODEL_IDS.has(m.id))?.id ?? "tangri";
   });
-  const [composerDraft, setComposerDraft] = useState<{
-    id: number;
-    text: string;
-  } | null>(null);
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [historyRefresh, setHistoryRefresh] = useState(0);
@@ -91,13 +86,6 @@ export function ChatShell() {
     reset();
   }, [reset]);
 
-  const handleUsePrompt = useCallback((text: string) => {
-    setComposerDraft({
-      id: Date.now(),
-      text,
-    });
-  }, []);
-
   return (
     <div
       className={`orkhon-chat-shell${
@@ -118,10 +106,6 @@ export function ChatShell() {
       <div className="orkhon-chat-shell__main">
         <ChatSurface
           modelSelector={<ModelSelector value={model} onChange={setModel} />}
-          modelLab={
-            <ModelLabPanel modelId={model} onUsePrompt={handleUsePrompt} />
-          }
-          composerDraft={composerDraft ?? undefined}
           messages={messages}
           sending={sending}
           awaitingFirstToken={awaitingFirstToken}

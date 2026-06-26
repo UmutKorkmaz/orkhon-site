@@ -2,7 +2,7 @@
 
 // HistorySidebar — list of the signed-in user's saved conversations, shown
 // alongside the chat surface. Newest first. Click to load (repopulate the
-// thread); per-row delete (right-to-erasure). Includes a "New run" action.
+// thread); per-row delete (right-to-erasure). Includes a "New chat" action.
 //
 // Contract with /api/conversations (owned by another agent):
 //   GET /api/conversations
@@ -60,19 +60,19 @@ interface HistorySidebarProps {
 /* ---------- copy ---------- */
 
 const COPY = {
-  heading: { en: "Saved runs", tr: "Kayıtlı denemeler" },
-  newChat: { en: "New run", tr: "Yeni deneme" },
+  heading: { en: "Saved chats", tr: "Kayıtlı sohbetler" },
+  newChat: { en: "New chat", tr: "Yeni sohbet" },
   empty: {
-    en: "No saved runs yet. Accept consent and run a prepared prompt — your Lab history will appear here.",
-    tr: "Henüz kayıtlı deneme yok. İzni kabul edip hazırlanmış bir prompt çalıştır — Lab geçmişin burada görünecek.",
+    en: "No saved chats yet. Accept consent and start typing — your conversations will appear here.",
+    tr: "Henüz kayıtlı sohbet yok. İzni kabul edip yazmaya başla — konuşmaların burada görünecek.",
   },
-  loading: { en: "Loading runs…", tr: "Denemeler yükleniyor…" },
-  loadError: { en: "Couldn't load runs.", tr: "Denemeler yüklenemedi." },
+  loading: { en: "Loading chats…", tr: "Sohbetler yükleniyor…" },
+  loadError: { en: "Couldn't load chats.", tr: "Sohbetler yüklenemedi." },
   loadErrorHint: { en: "Retry", tr: "Tekrar dene" },
   deleteError: { en: "Delete failed — restored.", tr: "Silinemedi — geri yüklendi." },
-  deleteLabel: { en: "Delete saved run", tr: "Kayıtlı denemeyi sil" },
-  openLabel: { en: "Open saved run", tr: "Kayıtlı denemeyi aç" },
-  untitled: { en: "Untitled run", tr: "Başlıksız deneme" },
+  deleteLabel: { en: "Delete conversation", tr: "Konuşmayı sil" },
+  openLabel: { en: "Open conversation", tr: "Konuşmayı aç" },
+  untitled: { en: "Untitled chat", tr: "Başlıksız sohbet" },
 } as const;
 
 function stableId(): string {

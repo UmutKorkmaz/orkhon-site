@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLang, LangToggle } from "@/lib/i18n";
 import { FOOTER, LINKS } from "@/lib/content";
 
@@ -37,7 +36,7 @@ export function SiteFooter() {
             >
               {t(FOOTER.links.huggingface)}
             </a>
-            <Link href={LINKS.chat}>{t(FOOTER.links.chat)}</Link>
+            <a href={LINKS.chat}>{t(FOOTER.links.chat)}</a>
           </nav>
           <LangToggle className="orkhon-site-footer__lang" />
         </div>

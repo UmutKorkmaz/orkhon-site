@@ -1,8 +1,8 @@
 # Setup — orkhon.umutkorkmaz.net
 
-The site (landing + Lab UI + auth wiring + `/api/chat` backend proxy) is **deployed and live**.
+The site (landing + `/chat` redirect + auth wiring + `/api/chat` backend proxy) is **deployed and live**.
 Two things only an operator can provide — until they're set, the site loads fully but **Google login**
-and **live chat** are inert (chat shows a friendly "backend not connected" message).
+and **live model runs** are inert (the Lab shows a friendly "backend not connected" message).
 
 Server env lives at `/var/www/orkhon/.env` (systemd `orkhon` service, port 3001, behind nginx).
 
@@ -18,9 +18,9 @@ Server env lives at `/var/www/orkhon/.env` (systemd `orkhon` service, port 3001,
    (`AUTH_SECRET` is already generated on the server. `NEXTAUTH_URL=https://orkhon.umutkorkmaz.net` is set.)
 4. `systemctl restart orkhon`
 
-After this the **Sign in with Google** button on `/lab` works; signed-in users get the "Unlimited" tier.
+After this Google login works for Orkhon-owned authenticated surfaces. The public Lab lives at `https://lab.umutkorkmaz.net/orkhon/`.
 
-## 2. Live chat backend (Hugging Face Space)
+## 2. Live Lab backend (Hugging Face Space)
 
 The Lab calls `/api/chat`, which proxies to the Orkhon HF Space (`ORKHON_SPACE`, default `korkmazumut/orkhon-demo`) via `@gradio/client`.
 
@@ -29,7 +29,7 @@ The Lab calls `/api/chat`, which proxies to the Orkhon HF Space (`ORKHON_SPACE`,
 3. (Optional) If the Space is private, set `ORKHON_HF_TOKEN` (a read token) in `/var/www/orkhon/.env`.
 4. `systemctl restart orkhon`
 
-Until this is done, `/lab` renders fully but messages return HTTP 503 `{"error":"backend_unavailable"}` → the UI shows "The live model backend is not connected yet."
+Until this is done, Lab runs return HTTP 503 `{"error":"backend_unavailable"}` → the UI shows "The live model backend is not connected yet."
 
 ## Deploy (for reference)
 

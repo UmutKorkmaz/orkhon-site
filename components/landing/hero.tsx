@@ -4,7 +4,6 @@
 // by a transformation axis. Built from inline SVG + CSS so there are no
 // heavy image assets; everything scales from 320px up.
 
-import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import { HERO, THESIS, LINKS } from "@/lib/content";
 import { MotionSolo } from "./motion";
@@ -24,10 +23,10 @@ export function Hero() {
           <p className="orkhon-hero__subtitle">{t(HERO.subtitle)}</p>
 
           <div className="orkhon-hero__ctas">
-            <Link href={LINKS.chat} className="orkhon-btn orkhon-btn--primary">
+            <a href={LINKS.chat} className="orkhon-btn orkhon-btn--primary">
               {t(HERO.cta.tryChat)}
               <RuneArrow />
-            </Link>
+            </a>
             <a
               href={LINKS.github}
               className="orkhon-btn orkhon-btn--ghost"

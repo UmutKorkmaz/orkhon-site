@@ -3,7 +3,6 @@
 // CTA — the closing invitation. Lab or read the source. A large serif
 // statement with the two primary actions, echoing the hero.
 
-import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import { LINKS } from "@/lib/content";
 import { MotionSolo } from "./motion";
@@ -32,16 +31,16 @@ export function Cta() {
 
           <p className="orkhon-cta__sub">
             {t({
-              en: "Choose a model in the Lab, or read every line of the stack that built it.",
-              tr: "Lab'de bir model seç ya da onu inşa eden yığının her satırını oku.",
+              en: "Open the model Lab, or read every line of the stack that built it.",
+              tr: "Model Lab'ini aç ya da onu inşa eden yığının her satırını oku.",
             })}
           </p>
 
           <div className="orkhon-cta__actions">
-            <Link href={LINKS.chat} className="orkhon-btn orkhon-btn--primary orkhon-cta__btn">
+            <a href={LINKS.chat} className="orkhon-btn orkhon-btn--primary orkhon-cta__btn">
               {t({ en: "Open the lab", tr: "Laboratuvarı aç" })}
               <RuneArrow />
-            </Link>
+            </a>
             <a
               href={LINKS.github}
               className="orkhon-btn orkhon-btn--ghost orkhon-cta__btn"
