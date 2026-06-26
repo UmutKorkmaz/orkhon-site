@@ -36,12 +36,12 @@ const BACKEND_COPY: { en: { title: string; body: string; how: string }; tr: { ti
   en: {
     title: "The live model backend is warming up",
     body: "Orkhon's serving weights aren't connected right now. The site is live, but the inference backend is cold, restarting, or still loading a checkpoint into memory.",
-    how: "How it works: your request is forwarded to the live Turkic model backend. Once it finishes loading and accepts connections, chat resumes — usually within a minute or two. Nothing on your end needs to change; just try again shortly.",
+    how: "How it works: your request is forwarded to the live Turkic model backend. Once it finishes loading and accepts connections, Lab runs resume — usually within a minute or two. Nothing on your end needs to change; just try again shortly.",
   },
   tr: {
     title: "Canlı model sunucusu ısınıyor",
     body: "Orkhon'un sunum ağırlıkları şu anda bağlı değil. Site yayında, ancak çıkarım sunucusu soğuk, yeniden başlıyor veya bir kontrol noktasını belleğe henüz yüklüyor.",
-    how: "Nasıl çalışır: isteğiniz canlı Türkçe model sunucusuna iletilir. Sunucu yüklenmeyi bitirip bağlantıları kabul ettiğinde sohbet devam eder — genellikle bir-iki dakika içinde. Sizin tarafınızda bir şey değiştirmeniz gerekmez; kısa bir süre sonra tekrar deneyin.",
+    how: "Nasıl çalışır: isteğiniz canlı Türkçe model sunucusuna iletilir. Sunucu yüklenmeyi bitirip bağlantıları kabul ettiğinde Lab denemeleri devam eder — genellikle bir-iki dakika içinde. Sizin tarafınızda bir şey değiştirmeniz gerekmez; kısa bir süre sonra tekrar deneyin.",
   },
 };
 

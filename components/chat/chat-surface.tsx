@@ -1,6 +1,6 @@
 "use client";
 
-// ChatSurface — the assembled layout for the /chat route.
+// ChatSurface — the assembled layout for the Orkhon Lab route.
 //
 // This is a presentational shell: it lays out the header (kicker, model
 // selector, session status, reset), the scrolling message thread, the error
@@ -23,20 +23,20 @@ import "./chat.css";
 
 const COPY = {
   kicker: {
-    en: "Inscription-grade chat",
-    tr: "Yazıt düzeyinde sohbet",
+    en: "Model-based language lab",
+    tr: "Model tabanlı dil laboratuvarı",
   },
   title: {
-    en: "Speak with Orkhon",
-    tr: "Orkhon ile konuş",
+    en: "Orkhon Lab",
+    tr: "Orkhon Lab",
   },
   intro: {
-    en: "Choose a Turkic voice and write to it. Base models continue your text; instruct models answer; the imported base carries outside knowledge.",
-    tr: "Bir Türk sesi seç ve ona yaz. Temel modeller metnini sürdürür; talimat modelleri yanıtlar; içe aktarılan temel dış bilgiyi taşır.",
+    en: "Select a live Orkhon family model, load a prepared experiment, edit the prompt, and run it against the same backend that serves the public demo.",
+    tr: "Canlı bir Orkhon ailesi modeli seç, hazırlanmış deneyi yükle, promptu düzenle ve public demoyu sunan aynı backend üzerinde çalıştır.",
   },
   reset: {
-    en: "New conversation",
-    tr: "Yeni konuşma",
+    en: "New run",
+    tr: "Yeni deneme",
   },
 } as const;
 
@@ -49,6 +49,11 @@ interface ChatSurfaceProps {
   onDismissError: () => void;
   onSend: (text: string) => void;
   onReset: () => void;
+  modelLab?: ReactNode;
+  composerDraft?: {
+    id: number;
+    text: string;
+  };
   /** Optional node rendered directly above the composer (e.g. consent gate). */
   composerAffix?: ReactNode;
 }
@@ -62,6 +67,8 @@ export function ChatSurface({
   onDismissError,
   onSend,
   onReset,
+  modelLab,
+  composerDraft,
   composerAffix,
 }: ChatSurfaceProps) {
   const { t } = useLang();
@@ -92,6 +99,8 @@ export function ChatSurface({
       </header>
 
       <div className="orkhon-chat__body orkhon-container">
+        {modelLab && <div className="orkhon-chat__lab">{modelLab}</div>}
+
         <MessageThread
           messages={messages}
           awaitingFirstToken={awaitingFirstToken}
@@ -117,7 +126,7 @@ export function ChatSurface({
               {t(COPY.reset)}
             </button>
           )}
-          <Composer onSend={onSend} disabled={sending} />
+          <Composer onSend={onSend} disabled={sending} draft={composerDraft} />
         </div>
       </div>
 
@@ -199,6 +208,9 @@ function ChatStyles() {
         flex-direction: column;
         padding-block: clamp(1rem, 0.75rem + 1vw, 1.75rem);
         min-height: 0;
+      }
+      .orkhon-chat__lab {
+        margin-bottom: clamp(1rem, 0.8rem + 1vw, 1.5rem);
       }
 
       .orkhon-chat__error-wrap {

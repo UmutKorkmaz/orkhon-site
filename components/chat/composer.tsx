@@ -20,11 +20,15 @@ import { useLang } from "@/lib/i18n";
 interface ComposerProps {
   onSend: (text: string) => void;
   disabled: boolean;
+  draft?: {
+    id: number;
+    text: string;
+  };
 }
 
 const PLACEHOLDER: { en: string; tr: string } = {
-  en: "Write to Orkhon…  (Enter to send · Shift+Enter for newline)",
-  tr: "Orkhon'a yaz…  (Göndermek için Enter · Yeni satır için Shift+Enter)",
+  en: "Load a prepared run or write to Orkhon…  (Enter to send · Shift+Enter for newline)",
+  tr: "Hazır deneme yükle veya Orkhon'a yaz…  (Göndermek için Enter · Yeni satır için Shift+Enter)",
 };
 
 const SEND_LABEL: { en: string; tr: string } = {
@@ -39,7 +43,7 @@ const COMPOSER_LABEL: { en: string; tr: string } = {
 
 const MAX_HEIGHT = 200;
 
-export function Composer({ onSend, disabled }: ComposerProps) {
+export function Composer({ onSend, disabled, draft }: ComposerProps) {
   const { t } = useLang();
   const [value, setValue] = useState("");
   const [isComposing, setIsComposing] = useState(false);
@@ -53,6 +57,18 @@ export function Composer({ onSend, disabled }: ComposerProps) {
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT)}px`;
   }, [value]);
+
+  useEffect(() => {
+    if (!draft) return;
+    setValue(draft.text);
+    requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (!el) return;
+      el.style.height = "auto";
+      el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT)}px`;
+      el.focus();
+    });
+  }, [draft]);
 
   function submit() {
     const trimmed = value.trim();

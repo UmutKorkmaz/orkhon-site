@@ -1,6 +1,6 @@
 "use client";
 
-// CTA — the closing invitation. Chat or read the source. A large serif
+// CTA — the closing invitation. Lab or read the source. A large serif
 // statement with the two primary actions, echoing the hero.
 
 import Link from "next/link";
@@ -32,14 +32,14 @@ export function Cta() {
 
           <p className="orkhon-cta__sub">
             {t({
-              en: "Talk to the flagship model, or read every line of the stack that built it.",
-              tr: "Amiral modelle konuş ya da onu inşa eden yığının her satırını oku.",
+              en: "Choose a model in the Lab, or read every line of the stack that built it.",
+              tr: "Lab'de bir model seç ya da onu inşa eden yığının her satırını oku.",
             })}
           </p>
 
           <div className="orkhon-cta__actions">
             <Link href={LINKS.chat} className="orkhon-btn orkhon-btn--primary orkhon-cta__btn">
-              {t({ en: "Try the chat", tr: "Sohbeti dene" })}
+              {t({ en: "Open the lab", tr: "Laboratuvarı aç" })}
               <RuneArrow />
             </Link>
             <a

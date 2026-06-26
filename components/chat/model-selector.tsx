@@ -13,7 +13,7 @@
 //
 // Kind meanings (canonical, surfaced to the user):
 //   base      → continues your text (raw continuation)
-//   instruct  → follows instructions / chat
+//   instruct  → follows instructions / assistant replies
 //   imported  → an open base re-loaded into the lineage with exact parity
 
 import { useEffect, useId, useRef, useState } from "react";
@@ -34,8 +34,8 @@ const KIND_EXPLANATION: Record<ModelKind, { en: string; tr: string }> = {
     tr: "Metninizi sürdürür — ham bir dil modeli. Bir cümle verin, düşünceyi tamamlasın.",
   },
   instruct: {
-    en: "Follows instructions and chat. Ask a question or give a task; it answers back.",
-    tr: "Talimatları ve sohbeti izler. Bir soru sorun veya görev verin; yanıtlasın.",
+    en: "Follows instructions. Ask a question or give a task; it answers back.",
+    tr: "Talimatları izler. Bir soru sorun veya görev verin; yanıtlasın.",
   },
   imported: {
     en: "An open-weights base re-loaded into Orkhon with exact parity — outside knowledge, same lineage.",

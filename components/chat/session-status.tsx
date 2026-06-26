@@ -19,16 +19,16 @@ const COPY = {
   anon: {
     badge: { en: "Free tier", tr: "Ücretsiz katman" },
     hint: {
-      en: "Anonymous — limited turns. Sign in for unlimited chat.",
-      tr: "Anonim — sınırlı deneme. Sınırsız sohbet için oturum açın.",
+      en: "Anonymous — limited runs. Sign in for unlimited Lab use.",
+      tr: "Anonim — sınırlı deneme. Sınırsız Lab kullanımı için oturum açın.",
     },
     signIn: { en: "Sign in with Google", tr: "Google ile oturum aç" },
   },
   authed: {
     badge: { en: "Unlimited", tr: "Sınırsız" },
     hint: {
-      en: "Signed in — unlimited chat enabled.",
-      tr: "Oturum açık — sınırsız sohbet etkin.",
+      en: "Signed in — unlimited Lab use enabled.",
+      tr: "Oturum açık — sınırsız Lab kullanımı etkin.",
     },
     signOut: { en: "Sign out", tr: "Oturumu kapat" },
   },

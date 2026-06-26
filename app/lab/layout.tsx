@@ -5,19 +5,19 @@ const TITLE = "Lab — Orkhon";
 export const metadata: Metadata = {
   title: TITLE,
   description:
-    "Redirects to the Orkhon Lab, where visitors can select a model and run prepared model-specific experiments.",
+    "Select an Orkhon family model, load prepared model-specific experiments, and run them against the live Turkic language model backend.",
   alternates: {
     canonical: "https://orkhon.umutkorkmaz.net/lab",
   },
   openGraph: {
     title: TITLE,
     description:
-      "Select an Orkhon family model and run prepared model-specific experiments.",
+      "A model-based lab for the Orkhon Turkic language models.",
     url: "https://orkhon.umutkorkmaz.net/lab",
   },
 };
 
-export default function ChatLayout({
+export default function LabLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return children;

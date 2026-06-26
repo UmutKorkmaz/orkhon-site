@@ -21,7 +21,7 @@ export interface Model {
 
 export const KIND_LABEL: Record<ModelKind, string> = {
   base: "Base / text continuation",
-  instruct: "Instruct / chat-tuned",
+  instruct: "Instruct / assistant-tuned",
   imported: "Imported open base",
 };
 

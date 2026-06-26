@@ -20,7 +20,7 @@ export const THESIS: Bilingual = {
 export const NAV = {
   home: { en: "Home", tr: "Ana Sayfa" },
   models: { en: "Models", tr: "Modeller" },
-  chat: { en: "Chat", tr: "Sohbet" },
+  chat: { en: "Lab", tr: "Lab" },
   github: { en: "GitHub", tr: "GitHub" },
 } as const;
 
@@ -39,7 +39,7 @@ export const HERO = {
   },
   cta: {
     readSource: { en: "Read the source", tr: "Kaynağı oku" },
-    tryChat: { en: "Try the chat", tr: "Sohbeti dene" },
+    tryChat: { en: "Open the lab", tr: "Laboratuvarı aç" },
   },
 } as const;
 
@@ -151,7 +151,7 @@ export const FOOTER = {
   links: {
     github: { en: "GitHub", tr: "GitHub" },
     huggingface: { en: "Hugging Face", tr: "Hugging Face" },
-    chat: { en: "Try the chat", tr: "Sohbeti dene" },
+    chat: { en: "Open the lab", tr: "Laboratuvarı aç" },
   },
   lang: { en: "English", tr: "Türkçe" },
 } as const;
@@ -161,7 +161,7 @@ export const LINKS = {
   github: "https://github.com/umutkorkmaz/orkhon",
   huggingface: "https://huggingface.co/umutkorkmaz",
   // Anchor on the landing page — the ModelZoo section carries id="models".
-  // Cross-page safe: from /chat this navigates home then scrolls to #models.
+  // Cross-page safe: from /lab this navigates home then scrolls to #models.
   models: "/#models",
-  chat: "/chat",
+  chat: "/lab",
 } as const;

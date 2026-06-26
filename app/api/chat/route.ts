@@ -243,12 +243,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     typeof latestRaw === "string" ? latestRaw : "";
   // First user message in the batch — used as a title for brand-new
   // conversations. Trim + clip so a leading-space or very long first message
-  // doesn't become an unwieldy title; fall back to "New chat".
+  // doesn't become an unwieldy title; fall back to "New run".
   const firstRaw = messages[0]?.content;
   const firstUserContent =
     (typeof firstRaw === "string" ? firstRaw : "")
       .trim()
-      .slice(0, 80) || "New chat";
+      .slice(0, 80) || "New run";
 
   // --- Persist the user turn (before calling the model) ---------------------
   // Only when consented. Wrapped end-to-end: any DB error is swallowed and we

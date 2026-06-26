@@ -8,8 +8,8 @@ interface AuthErrorPageProps {
 
 const COPY = {
   title: "Oturum açma şu anda hazır değil",
-  body: "Google OAuth ayarında sunucu taraflı bir sorun var. Sohbeti anonim olarak kullanmaya devam edebilirsin; kayıtlı sohbetler için OAuth anahtarı yenilenmeli.",
-  action: "Sohbete dön",
+  body: "Google OAuth ayarında sunucu taraflı bir sorun var. Lab'i anonim olarak kullanmaya devam edebilirsin; kayıtlı denemeler için OAuth anahtarı yenilenmeli.",
+  action: "Lab'e dön",
 } as const;
 
 export default async function AuthErrorPage({
@@ -27,7 +27,7 @@ export default async function AuthErrorPage({
         {error && (
           <p className="orkhon-auth-error__code">Kod: {error}</p>
         )}
-        <Link className="orkhon-btn orkhon-btn--primary" href="/chat">
+        <Link className="orkhon-btn orkhon-btn--primary" href="/lab">
           {COPY.action}
         </Link>
       </section>
