@@ -21,15 +21,15 @@ interface Bucket {
 }
 
 export const ANONYMOUS_LIMIT = {
-  // A demo chat has to let a curious visitor actually explore it. 10/hour was
-  // tight enough that anyone poking the model for a few minutes hit the cap and
-  // saw "no answer". 40/hour still blunts abuse but lets people play.
-  max: 40,
+  // Demo chat needs room for real exploration and multi-turn probing.
+  // 40/hour was still too tight for a visitor trying many FAQ/rune examples.
+  // 200/hour remains a blunt abuse brake while keeping the public demo usable.
+  max: 200,
   windowMs: 60 * 60 * 1000, // 1 hour
 } as const;
 
 export const AUTHED_LIMIT = {
-  max: 60,
+  max: 400,
   windowMs: 60 * 60 * 1000, // 1 hour
 } as const;
 

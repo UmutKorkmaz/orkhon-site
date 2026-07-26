@@ -22,7 +22,7 @@ const TR_MARKERS = [
 ] as const;
 
 const ADD_RE =
-  /(?:what\s+is\s+)?(\d{1,4})\s*(?:\+|plus)\s*(\d{1,4})(?:\s*(?:=|\?)|\s*(?:kactir|kaçtır))?/i;
+  /(?:(?:what\s+is|how\s+many\s+is)\s+)?(\d{1,4})\s*(?:\+|plus)\s*(\d{1,4})(?:\s*(?:=|\?)|\s*(?:kactir|kaçtır))?/i;
 
 const CAPABILITY_EN =
   "I can answer English and Turkish questions, write short explanations and summaries, solve simple arithmetic, and transliterate Old Turkic/Kokturk runes into Latin. Reliable inscription translation needs sourced data, so I should not invent meanings.";
