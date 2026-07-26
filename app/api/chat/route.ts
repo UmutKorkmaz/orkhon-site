@@ -243,10 +243,24 @@ export async function POST(req: Request): Promise<NextResponse> {
       ? body.conversationId
       : null;
 
-  const modelFromClient =
+  // Gradio dropdown only accepts known family members. Default to tangri when
+  // the client omits model or sends an unsupported value (e.g. "unknown").
+  const ALLOWED_MODELS = new Set([
+    "tangri",
+    "bunghu",
+    "tegin",
+    "tonyuk",
+    "istem",
+    "bumin-mini",
+    "kashgar",
+  ]);
+  const requestedModel =
     typeof body.model === "string" && body.model.length > 0
       ? body.model
-      : "unknown";
+      : "tangri";
+  const modelFromClient = ALLOWED_MODELS.has(requestedModel)
+    ? requestedModel
+    : "tangri";
 
   // --- Auth + rate limit -----------------------------------------------------
   const user = await getSessionUser();
@@ -322,20 +336,31 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   // --- Build the Gradio call -------------------------------------------------
-  // Gradio ChatInterface respond(message, history) -> [assistantMsg, history].
-  // history is a list of [user, assistant] tuples for all PRIOR turns; the
-  // current user turn is passed as `message`, so drop it from history.
+  // Gradio ChatInterface respond(message, history) -> assistant text.
+  // history is prior turns only; build pairs from roles, not raw index pairs.
   const history: Array<[string, string]> = [];
-  for (let i = 0; i + 1 < messages.length; i += 2) {
-    const u = messages[i]?.content;
-    const a = messages[i + 1]?.content;
-    if (typeof u === "string" && typeof a === "string") {
-      history.push([u, a]);
+  const prior = messages.slice(0, -1);
+  let pendingUser: string | null = null;
+  for (const msg of prior) {
+    const role = typeof msg.role === "string" ? msg.role : "";
+    const content = typeof msg.content === "string" ? msg.content : "";
+    if (!content) continue;
+    if (role === "user") {
+      if (pendingUser !== null) {
+        // Two user turns in a row: keep the latest unpaired user only.
+        pendingUser = content;
+      } else {
+        pendingUser = content;
+      }
+    } else if (role === "assistant" && pendingUser !== null) {
+      history.push([pendingUser, content]);
+      pendingUser = null;
     }
   }
 
   try {
     let reply = deterministicAssistantReply(latestMessage);
+    let usedBackend = false;
 
     if (reply === null) {
       const space = process.env.ORKHON_SPACE ?? "korkmazumut/orkhon-demo";
@@ -349,22 +374,39 @@ export async function POST(req: Request): Promise<NextResponse> {
       // Bound both phases so a cold/asleep backend fails fast with a clear
       // "waking up" message instead of holding the request open for minutes while
       // the browser sits on the composing dots.
-      const app = await withTimeout(Client.connect(space, opts), 20_000);
-      const result = await withTimeout(
-        app.predict<unknown[]>("respond", [
-          latestMessage,
-          history,
-          modelFromClient,
-        ]),
-        35_000,
-      );
+      try {
+        const app = await withTimeout(Client.connect(space, opts), 20_000);
+        const result = await withTimeout(
+          app.predict<unknown[]>("respond", [
+            latestMessage,
+            history,
+            modelFromClient,
+          ]),
+          35_000,
+        );
 
-      const data = result.data;
-      const first = Array.isArray(data) ? data[0] : undefined;
-      reply =
-        typeof first === "string" ? first : JSON.stringify(first ?? "");
+        const data = result.data;
+        const first = Array.isArray(data) ? data[0] : undefined;
+        reply =
+          typeof first === "string" ? first : JSON.stringify(first ?? "");
+        usedBackend = true;
 
-      if (isDegenerateAssistantReply(reply, latestMessage)) {
+        if (
+          isDegenerateAssistantReply(reply, latestMessage) ||
+          (typeof reply === "string" &&
+            reply.startsWith("[") &&
+            reply.includes("could not respond"))
+        ) {
+          reply = fallbackAssistantReply(latestMessage);
+        }
+      } catch (backendError) {
+        // Prefer an honest specialist fallback over a hard 503 so the web UI
+        // stays usable while the Space rebuilds/restarts. Keep the explicit
+        // waking_up signal for pure timeouts so the UI can still nudge retry.
+        if (backendError instanceof BackendTimeout) {
+          return json(req, 503, BACKEND_WAKING_UP);
+        }
+        console.error("[chat] backend error", backendError);
         reply = fallbackAssistantReply(latestMessage);
       }
     }
@@ -390,13 +432,19 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
     }
 
-    return json(req, 200, { reply, conversationId, persisted });
+    return json(req, 200, {
+      reply,
+      conversationId,
+      persisted,
+      backend: usedBackend ? "space" : "router",
+    });
   } catch (e) {
-    if (e instanceof BackendTimeout) {
-      // Reachable but slow (cold start): keep 503 but signal "waking up".
-      return json(req, 503, BACKEND_WAKING_UP);
-    }
-    console.error("[chat] backend error", e);
-    return json(req, 503, BACKEND_UNAVAILABLE);
+    console.error("[chat] unexpected error", e);
+    return json(req, 200, {
+      reply: fallbackAssistantReply(latestMessage),
+      conversationId,
+      persisted: false,
+      backend: "router",
+    });
   }
 }
