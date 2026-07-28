@@ -48,6 +48,8 @@ interface ChatBody {
   model?: unknown;
   messages?: unknown;
   conversationId?: unknown;
+  /** Lab playground requests use mode="lab" to exercise the live model path. */
+  mode?: unknown;
 }
 
 const BACKEND_UNAVAILABLE = {
@@ -261,6 +263,8 @@ export async function POST(req: Request): Promise<NextResponse> {
   const modelFromClient = ALLOWED_MODELS.has(requestedModel)
     ? requestedModel
     : "tangri";
+  const labMode =
+    typeof body.mode === "string" && body.mode.trim().toLowerCase() === "lab";
 
   // --- Auth + rate limit -----------------------------------------------------
   const user = await getSessionUser();
@@ -359,7 +363,10 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   try {
-    let reply = deterministicAssistantReply(latestMessage);
+    // Public site chat prefers the specialist router. Lab playground requests
+    // intentionally skip the site-side short-circuit so visitors can exercise
+    // the selected model backend (still quality-gated in the Space).
+    let reply = labMode ? null : deterministicAssistantReply(latestMessage);
     let usedBackend = false;
 
     if (reply === null) {
@@ -376,14 +383,30 @@ export async function POST(req: Request): Promise<NextResponse> {
       // the browser sits on the composing dots.
       try {
         const app = await withTimeout(Client.connect(space, opts), 20_000);
-        const result = await withTimeout(
-          app.predict<unknown[]>("respond", [
-            latestMessage,
-            history,
-            modelFromClient,
-          ]),
-          35_000,
-        );
+        // Prefer the 4-arg lab-aware Space signature. Fall back to the older
+        // 3-arg respond(message, history, model) while Spaces are rebuilding.
+        let result;
+        try {
+          result = await withTimeout(
+            app.predict<unknown[]>("respond", [
+              latestMessage,
+              history,
+              modelFromClient,
+              labMode,
+            ]),
+            35_000,
+          );
+        } catch (firstError) {
+          if (!labMode) throw firstError;
+          result = await withTimeout(
+            app.predict<unknown[]>("respond", [
+              latestMessage,
+              history,
+              modelFromClient,
+            ]),
+            35_000,
+          );
+        }
 
         const data = result.data;
         const first = Array.isArray(data) ? data[0] : undefined;
