@@ -35,6 +35,69 @@ const ORKHON_TR =
 
 const OLD_TURKIC_RE = /[\u{10C00}-\u{10C4F}]/u;
 
+const SCHOLARLY_RUNE: Record<string, string> = {
+  A: "a", AE: "ä", I: "i", E: "e", O: "o", OE: "ö",
+  AB: "b", AEB: "b", AG: "ɣ", AEG: "g", AD: "d", AED: "d",
+  EZ: "z", AY: "y", AEY: "y", AEK: "k", OEK: "k", AL: "l",
+  AEL: "l", ELT: "lt", EM: "m", AN: "n", AEN: "n", ENT: "nt",
+  ENC: "nč", ENY: "ñ", ANG: "ŋ", ENG: "ŋ", AENG: "ŋ", EP: "p",
+  OP: "p", IC: "č", EC: "č", AQ: "q", IQ: "q", OQ: "q",
+  AR: "r", AER: "r", AS: "s", AES: "s", ASH: "š", ESH: "š",
+  AT: "t", AET: "t", OT: "t", BASH: "baš",
+};
+
+// Minimal Orkhon inventory for the demo path (common Orkhon letters).
+const RUNE_INVENTORY: Record<string, string> = {
+  "𐰀": "A", "𐰂": "AE", "𐰃": "I", "𐰅": "E", "𐰆": "O", "𐰇": "OE",
+  "𐰉": "AB", "𐰋": "AEB", "𐰍": "AG", "𐰏": "AEG", "𐰑": "AD", "𐰓": "AED",
+  "𐰔": "EZ", "𐰖": "AY", "𐰘": "AEY", "𐰚": "AEK", "𐰜": "OEK", "𐰞": "AL",
+  "𐰠": "AEL", "𐰡": "ELT", "𐰢": "EM", "𐰣": "AN", "𐰤": "AEN", "𐰦": "ENT",
+  "𐰨": "ENC", "𐰪": "ENY", "𐰬": "ANG", "𐰭": "ENG", "𐰮": "AENG", "𐰯": "EP",
+  "𐰰": "OP", "𐰱": "IC", "𐰲": "EC", "𐰴": "AQ", "𐰶": "IQ", "𐰸": "OQ",
+  "𐰺": "AR", "𐰼": "AER", "𐰽": "AS", "𐰾": "AES", "𐰿": "ASH", "𐱁": "ESH",
+  "𐱃": "AT", "𐱅": "AET", "𐱇": "OT", "𐱈": "BASH",
+};
+
+function scholarlyRuneToLatin(text: string): string {
+  let out = "";
+  for (const ch of text) {
+    const inv = RUNE_INVENTORY[ch];
+    if (!inv) {
+      out += ch;
+      continue;
+    }
+    out += SCHOLARLY_RUNE[inv] || inv.toLowerCase();
+  }
+  return out;
+}
+
+function formatRuneAnalysis(runic: string, turkish: boolean): string {
+  const latin = scholarlyRuneToLatin(runic);
+  const rows: string[] = [];
+  for (const ch of runic) {
+    if (/\s/.test(ch)) continue;
+    const inv = RUNE_INVENTORY[ch];
+    if (!inv) continue;
+    const lat = SCHOLARLY_RUNE[inv] || inv.toLowerCase();
+    rows.push(`- ${ch}: inventory=${inv} → latin=${lat}`);
+  }
+  const nl = String.fromCharCode(10);
+  if (turkish) {
+    return [
+      `Latin transliterasyon: ${latin}`,
+      "İşaret/token tablosu:",
+      ...rows,
+      "Modern Türkçe notu: bu bir harf-transliterasyonudur, tam yazıt çevirisi değildir. Kaynaklı okuma olmadan anlam uydurmam. Sık görülen sözcüklerde tahmini eşleşme: tŋri ≈ Tanrı/Gök; bilge/bilga ≈ bilge.",
+    ].join(nl);
+  }
+  return [
+    `Latin transliteration: ${latin}`,
+    "Sign/token table:",
+    ...rows,
+    "Modern Turkish note: this is sign transliteration, not a full inscription translation. Without sourced reading I will not invent meanings. Common lexical matches when they appear: tŋri ≈ Tanrı/Gök; bilge/bilga ≈ wise/bilge.",
+  ].join(nl);
+}
+
 function normalize(text: string): string {
   // Fold both Turkish and ASCII I/i variants to plain "i" so prompts like
   // "Istanbul" and "İstanbul" match the same FAQ keys.
@@ -314,11 +377,48 @@ export function deterministicAssistantReply(message: string): string | null {
   const faq = faqReply(text);
   if (faq) return faq;
 
-  // If the user only pasted runes, let the Space/Python router handle exact map.
+  const runic = extractOldTurkic(text);
+  if (runic) {
+    const lower = normalize(text);
+    const wantsExplain = [
+      "explain",
+      "token",
+      "modern turkish",
+      "anlat",
+      "acikla",
+      "açıkla",
+      "translate",
+      "çeviri",
+      "ceviri",
+      "tercüme",
+      "tercume",
+    ].some((k) => lower.includes(k));
+    const wantsTool =
+      wantsExplain ||
+      [
+        "transliterat",
+        "latin",
+        "rune",
+        "old turkic",
+        "gokturk",
+        "göktürk",
+        "kokturk",
+        "harflerine",
+        "cevir",
+        "çevir",
+        "oku",
+      ].some((k) => lower.includes(k)) ||
+      OLD_TURKIC_RE.test(text.replace(/\s+/g, "")) && text.replace(/\s+/g, "").length === runic.replace(/\s+/g, "").length;
+    if (wantsTool) {
+      return wantsExplain
+        ? formatRuneAnalysis(runic, looksTurkish(text))
+        : scholarlyRuneToLatin(runic);
+    }
+  }
+
   // For factual open asks that we do not cover, short-circuit with a clear
   // boundary instead of shipping tiny-model confabulation.
   if (shouldUseRawModel(text)) return null;
-  if (extractOldTurkic(text)) return null;
   return fallbackAssistantReply(text);
 }
 

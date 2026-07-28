@@ -363,10 +363,9 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   try {
-    // Public site chat prefers the specialist router. Lab playground requests
-    // intentionally skip the site-side short-circuit so visitors can exercise
-    // the selected model backend (still quality-gated in the Space).
-    let reply = labMode ? null : deterministicAssistantReply(latestMessage);
+    // Always prefer deterministic tools (math / Old Turkic analysis) first.
+    // Lab mode only falls through to the live model for freeform prompts.
+    let reply = deterministicAssistantReply(latestMessage);
     let usedBackend = false;
 
     if (reply === null) {
